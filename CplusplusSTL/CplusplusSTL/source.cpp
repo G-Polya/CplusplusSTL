@@ -7,15 +7,7 @@ using namespace std;
 
 int main()
 {
-	double data[] = { 2.5,4.56,55,58.5 };
-	cout << "배열 원소들:\n";
-	for (auto iter = begin(data); iter != end(data); iter++)
-	{
-		cout << *iter << " ";
-	}
+	cout << "값은 공백으로 구분해서 입력하세요. 종료하려면 Ctrl+Z를 입력하세요" << endl;
 
-	auto total = accumulate(begin(data), end(data), 0.0);
-	cout << "\n배열 원소들의 합계: " << total << endl;
 
-	return 0;
 }
