@@ -146,5 +146,54 @@ auto pnumbers = make_unique<int[]>(len);
 auto unique_p = make_unique<string>(6, '*');
 string pstr {unique_p.get()};
 ~~~
+### 1.6.1.1 unique_ptr<T> 객체를 초기화하기
+- 스마트 포인터가 소멸될 떄, unique_ptr<T> 객체가 가리키는 객체도 소멸된다
+- unique_ptr<T> 객체에 인수없이 reset()을 호출하면 유니크 포인터가 가리키는 객체를 소멸시키고 unique_ptr<T>객체의 원시포인터를 nullptr로 교체한다. 
+- 즉, reset()을 호출하면 유니크 포인터가 가리키는 객체를 언제든지 소멸시킬 수 있다
+~~~
+auto pname = make_unique<string>("Algernon");
+...
+pname.reset(); // string 객체의 메모리를 해제한다
+~~~
+- 새 T 객체의 주소를 reset()에 전달해도 된다. 이렇게 하면 unique_ptr<T>가 가리키던 이전 객체는 소멸되고, unique_ptr<T>의 주소는 새 객체의 주소로 대체된다
+~~~
+pname.reset(new stirng("Fred"));
+~~~
 
+- release()를 활용한 객체의 소유권 이전
+~~~
+auto up_name = make_unique<string>("Algernon");
+unique_ptr<string> up_new_name(up_name.release());     //up_name이 가리키던 객체의 원시포인터를 반환해, up_new_name이 "Algernon" string 객체를 가리키게 된다. up_name의 원시 포인터는 nullptr
+~~~
+- swap을 이용한 객체 상호교환
+~~~
+auto pn1 = make_unique<string>("Jack");
+auto pn2 = make_unique<string>("Jill");
+pn1.swap(pn2);
+~~~
+### 1.6.2 unique_ptr<T> 객체를 비교하고 검사하기
+- unique_ptr<T> 객체끼리 비교할 때는 두 객체의 get() 멤버를 호출해서 반환된 주소를 비교한다
+~~~
+auto up_name = make_unique<string>("Algernon");
+unique_ptr<string> up_new_name(up_name.release());
+if(up_new)      // unique_ptr<T> 객체는 bool 타입으로 암시적으로 변환가능
+{
+    cout<<"The name is <<up_name<<endl;
+}
+~~~
 
+## 1.6.2 shared_ptr<T> 객체 사용하기
+~~~
+shared_ptr<double> pdata (new double(999.9));
+~~~
+또는
+~~~
+auto pdata = make_shared<double>(999.9);
+~~~
+- shared_ptr<T>를 다른 shared_ptr<T>에 할당하는 것도 가능하다
+```C++
+shared_ptr<double> pdata(new double(999.0));
+shared_ptr<double> pdata2;      //nullptr를 갖는 포인터
+pdata2 = pdata;                 // 포인터 복제 - 둘다 같은 변수를 가리킨다. 레퍼런스 카운터 증가
+cout<<*pdata<<endl;
+```
