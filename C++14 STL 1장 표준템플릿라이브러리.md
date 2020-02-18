@@ -7,7 +7,7 @@
 ## 1.4.1 반복자 얻기
 - 전역함수 begin()과 end()는 일반적인 배열이나 문자열 객체를 인수로 받아도 동작하며 반복자를 얻는 단일방법을 제공
 
-~~~
+```C+++
 #include <numeric>
 #include <iostream>
 #include <iterator>
@@ -29,14 +29,14 @@ int main()
 
 }
 
-~~~
+```C++
 ### ※accumulate() 함수는 두 인수로 지정된 범위에 있는 원소들의 합계를 반환한다. 세번쨰 인수는 합계에 사용할 초기값을 지정한다.
 
 ## 1.4.3 스트림 반복자
 - istream_iterator<T>는 istream에서 타입 T의 객체들을 읽을 수 있는 입력반복자. istream은 파일스트림이나 표준입력스트림 cin이 될 수 있다.
 - istream_iterator<T>의 인수없는 생성자는 스트림의 끝에 도달하면 일치하게 되는 end 반복자 객체를 생성
 
-~~~
+```C++
 int main()
 {
 	cout << "값은 공백으로 구분해서 입력하세요. 종료하려면 Ctrl+Z를 입력하세요: " << endl;
@@ -49,7 +49,7 @@ int main()
 }
 
 
-~~~
+```
 
 ## 1.4.4 반복자 어댑터
 - 역방향반복자(reverse_iterator), 삽입반복자(insert_iterator), 이동반복자(move_iterator)
@@ -70,7 +70,7 @@ int main()
 
 # 1.5 반복자에 쓰이는 연산
 - advance()는 첫번째 인수로 받은 반복자를 두번째 인수로 지정한 숫자만큼 증가시킨다.
-~~~
+```C++
 int main()
 {
 	int data[] = { 1,2,3,4,5,6 };
@@ -80,9 +80,9 @@ int main()
 
 	return 0;
 }
-~~~
+```
 - distance()는 두 반복자가 지정한 범위에 있는 원소들의 개수를 반환
-~~~
+```C++
 int main()
 {
 	int data[] = { 1,2,3,4,5,6 };
@@ -92,9 +92,9 @@ int main()
 
 	return 0;
 }
-~~~
+```
 - next()는 첫번째 인수로 받은 반복자를 두번쨰 인수로 지정한 숫자만큼 증가시킨 반복자를 반환
-~~~
+```C++
 int main()
 {
 	int data[] = { 1,2,3,4,5,6 };
@@ -104,7 +104,7 @@ int main()
 	
 	return 0;
 }
-~~~
+```
 - prev()는 첫번째 인수로 받은 반복자를 두번쨰 인수로 지정한 숫자만큼 감소시킨 반복자를 반환
 
 # 1.6 스마트 포인터
@@ -118,78 +118,77 @@ int main()
 - unique_ptr<T> 객체는 주소 하나를 유일하게 저장. 주소가 가리키는 객체를 unique_ptr<T> 객체가 독점적으로 소유
 - unique_ptr<T>객체가 소멸될 떄 해당객체도 같이 소멸.
 - 스마트 포인터를 여러개 둘 필요가 없고 소유권을 하나로 정해두고 싶을 때 이러한 유형의 스마트포인터를 사용
-~~~
+```C++
 unique_str<string> pname {new string{"Algermon}};
-~~~
+```
 - unique_ptr<T> 객체를 생성하는 더 좋은 방법은 memory헤더에 정의된 mkae_unique<T>() 함수템플릿을 사용하는것
-~~~
+```C++
 auto pname = make_unique<string>("Algernon");
-~~~
+```
 - 원시 포인터와 마찬가지로 유니크 포인터를 역참조해서 객체에 접근할 수 있다.
-~~~
+```C++
 cout<<*pname<<endl;
-~~~
+```
 - 배열을 가리키는 unqiue_ptr<T> 객체도 생성할 수 있다
-~~~
+```C++
 size_t len(10);
 unique_ptr<int[]> pnumbers {new int[len]};
 
 auto pnumbers = make_unique<int[]>(len);
-~~~
+```
 
 - unique_ptr<T> 객체는 복제할 수 없으므로 함수에 값으로 전달할 수 없다. 참조에 의한 호출은 가능
 - unique_ptr<T> 객체를 반환하는 건 가능
 - unique_ptr<T> 객체를 이동하거나 원하는 위치에서 생성하는 방식으로 컨테이너에 저장만 할 수 있다.
 
 - unique_ptr<T>에서 원시포인터 얻는 방법
-~~~
+```C++
 auto unique_p = make_unique<string>(6, '*');
 string pstr {unique_p.get()};
-~~~
+```
 ### 1.6.1.1 unique_ptr<T> 객체를 초기화하기
 - 스마트 포인터가 소멸될 떄, unique_ptr<T> 객체가 가리키는 객체도 소멸된다
 - unique_ptr<T> 객체에 인수없이 reset()을 호출하면 유니크 포인터가 가리키는 객체를 소멸시키고 unique_ptr<T>객체의 원시포인터를 nullptr로 교체한다. 
 - 즉, reset()을 호출하면 유니크 포인터가 가리키는 객체를 언제든지 소멸시킬 수 있다
-~~~
+```C++
 auto pname = make_unique<string>("Algernon");
 ...
 pname.reset(); // string 객체의 메모리를 해제한다
-~~~
+```
 - 새 T 객체의 주소를 reset()에 전달해도 된다. 이렇게 하면 unique_ptr<T>가 가리키던 이전 객체는 소멸되고, unique_ptr<T>의 주소는 새 객체의 주소로 대체된다
-~~~
+```C++
 pname.reset(new stirng("Fred"));
-~~~
+```
 
 - release()를 활용한 객체의 소유권 이전
-~~~
+```C++
 auto up_name = make_unique<string>("Algernon");
 unique_ptr<string> up_new_name(up_name.release());     //up_name이 가리키던 객체의 원시포인터를 반환해, up_new_name이 "Algernon" string 객체를 가리키게 된다. up_name의 원시 포인터는 nullptr
-~~~
+```
 - swap을 이용한 객체 상호교환
-~~~
+```C++
 auto pn1 = make_unique<string>("Jack");
 auto pn2 = make_unique<string>("Jill");
 pn1.swap(pn2);
-~~~
+```
 ### 1.6.2 unique_ptr<T> 객체를 비교하고 검사하기
 - unique_ptr<T> 객체끼리 비교할 때는 두 객체의 get() 멤버를 호출해서 반환된 주소를 비교한다
-~~~
+```C++
 auto up_name = make_unique<string>("Algernon");
 unique_ptr<string> up_new_name(up_name.release());
 if(up_new)      // unique_ptr<T> 객체는 bool 타입으로 암시적으로 변환가능
 {
     cout<<"The name is <<up_name<<endl;
 }
-~~~
-
+```
 ## 1.6.2 shared_ptr<T> 객체 사용하기
-~~~
+```C++
 shared_ptr<double> pdata (new double(999.9));
-~~~
+```
 또는
-~~~
+```C++
 auto pdata = make_shared<double>(999.9);
-~~~
+```
 - shared_ptr<T>를 다른 shared_ptr<T>에 할당하는 것도 가능하다
 ```C++
 shared_ptr<double> pdata(new double(999.0));
@@ -197,3 +196,21 @@ shared_ptr<double> pdata2;      //nullptr를 갖는 포인터
 pdata2 = pdata;                 // 포인터 복제 - 둘다 같은 변수를 가리킨다. 레퍼런스 카운터 증가
 cout<<*pdata<<endl;
 ```
+- pdata를 복제하면 레퍼런스 카운트가 증가한다. 두 포인터 모두 reset되거나 소멸되어야 double 변수에 할당된 메모리가 해제된다
+- shared_ptr<T>는 기본적으로 자유 공간에 생성된 배열의 주소를 저장하는 용도론 쓸 수 없으나 array<T>나 vector<T> 컨테이너의 주소를 저장하는건 가능하다
+- 다른 포인터에서 get()으로 반환한 원시 포인터를 사용해서 shared_ptr<T>를 생성하는건 프로그램 충돌을 야기
+
+### 1.6.2.1 shareD_ptr<T> 객체 초기화하기
+```C++
+auto pname = make_shared<stirng>("Charles Dickens");
+...
+pname = nullptr;        //pname을 nullptr로 초기화. 레퍼런스 카운트 1감소. 문자열은 메모리에서 소멸X
+```
+- reset() 사용
+```C++
+pname.reset();      //nullptr로 초기화
+pname.reset(new string("Jane Austen"));     //pname은 새 문자열을 가리킨다
+```
+
+###
+
