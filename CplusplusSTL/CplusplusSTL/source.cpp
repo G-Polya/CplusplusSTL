@@ -1,30 +1,24 @@
-#include <numeric>
 #include <iostream>
-#include <iterator>
-#include <algorithm>
-#include <memory>
-#include <string>
-#include <functional>
-
+#include <iomanip>
+#include <array>
 using namespace std;
 
 
 int main()
 {
-	string str1[] = { "I am", "Gundam","내가","건담이다" };
-	
+	array<double, 4> these = { 1.0,2.0,3.0,4.0 };
+	array<double, 4> those = { 1.0,2.0,3.0,4.0 };
+	array<double, 4> them = { 1.0,3.0,3.0,4.0 };
 
-	function<string(string)> op = [](string str)
-	{
-		for (auto iter = begin(str); iter != end(str); iter++)
-		{
-			*iter = toupper(*iter);
-		}
+	if (these == those)
+		cout << "these and those are equal" << endl;
+	if (those != them)
+		cout << "those and them are not equal" << endl;
+	if (those < them)
+		cout << "those are less than them" << endl;
+	if (them > those)
+		cout << "them are greater than those" << endl;
 
-		return str;
-	};
-
-	transform(begin(str1), end(str1), ostream_iterator<string>(cout, "\n"), op);
 
 	return 0;
 }
