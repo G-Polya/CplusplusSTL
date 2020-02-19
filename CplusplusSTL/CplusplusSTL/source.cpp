@@ -1,55 +1,30 @@
 #include <numeric>
 #include <iostream>
 #include <iterator>
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <functional>
 
 using namespace std;
 
-class Box
-{
-private:
-	double length, width, height;
-public:
-	Box(double length, double width, double height)
-		: length(length), width(width), height(height)
-	{}
-
-	double getLength() const
-	{
-		return this->length;
-	}
-
-	double getWidth() const
-	{
-		return this->width;
-	}
-
-	double getHeight() const
-	{
-		return this->height;
-	}
-
-};
-
-class Volume
-{
-public:
-	double operator()(double x, double y, double z)
-	{
-		return x * y * z;
-	}
-
-	double operator()(const Box& box)
-	{
-		return box.getLength() * box.getWidth() * box.getHeight();
-	}
-};
 
 int main()
 {
-	Volume volume;
-	Box box( 1.0, 2.0, 3.0 );
-	cout << "상자의 두피" << volume(box) << endl;
+	string str1[] = { "I am", "Gundam","내가","건담이다" };
+	
+
+	function<string(string)> op = [](string str)
+	{
+		for (auto iter = begin(str); iter != end(str); iter++)
+		{
+			*iter = toupper(*iter);
+		}
+
+		return str;
+	};
+
+	transform(begin(str1), end(str1), ostream_iterator<string>(cout, "\n"), op);
+
 	return 0;
 }
