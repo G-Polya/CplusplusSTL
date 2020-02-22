@@ -4,27 +4,19 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <deque>
 using namespace std;
 
 
 int main()
 {
-	vector<string> words = { "one","three","eight" };
-	copy(begin(words), end(words), ostream_iterator<string>(cout, " "));
-	cout << endl;
-	auto iter = words.insert(++begin(words), "two");
-	copy(begin(words), end(words), ostream_iterator<string>(cout, " "));
-	cout << endl;
-	string more[] = { "five", "six", "seven" };
-	iter = words.insert(--end(words), begin(more), end(more));
-	copy(begin(words), end(words), ostream_iterator<string>(cout, " "));
-	cout << endl;
-	iter = words.insert(end(words), "ten");
-	copy(begin(words), end(words), ostream_iterator<string>(cout, " "));
-	cout << endl;
+	deque<string> names;
+	cout << "Enter first names separated by spaces. Enter Ctrl+Z on a new line to end: \n";
+	copy(istream_iterator<string>(cin), istream_iterator<string>(), front_inserter(names));
 
-	iter = words.insert(end(words), { string("twelve"), string("thirteen") });
-	copy(begin(words), end(words), ostream_iterator<string>(cout, " "));
+	cout << "\nIn reverse order, the names you entered are:\n";
+	copy(begin(names), end(names), ostream_iterator<string>(cout, " "));
+
 	cout << endl;
 
 	return 0;
