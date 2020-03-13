@@ -1,41 +1,47 @@
 #include <iostream>
-#include <list>
-#include <string>
+#include <array>
 #include <functional>
-
 using namespace std;
 
 template<typename Iter>
 void list_elements(Iter begin, Iter end)
 {
+	size_t perline = 8;
+	size_t count = 0;
 	while (begin != end)
 	{
-		cout << *begin++ << endl;
+		cout << *begin++;
+		if (++count % perline == 0)
+			cout << "\n";
+		cout << endl;
 	}
 }
 
+
 int main()
 {
-	list<string> proverbs;
+	function<int(int)> fibonacci;
 
-	cout << "Enter a few proverbs and enter an empty line to end: " << endl;
-	string proverb;
-	while (getline(cin, proverb, '\n'), !proverb.empty())
-		proverbs.push_front(proverb);
-	cout << "Go on, just one more:" << endl;
-	getline(cin, proverb, '\n');
-	proverbs.emplace_back(proverb);
+	fibonacci = [&fibonacci](int no) ->int
+	{
+		if (no == 0)
+			return 0;
+		else if (no == 1 || no == 2)
+			return 1;
+		else
+			return fibonacci(no - 1) + fibonacci(no - 2);
+	};
 
-	cout << "\nThe elements in the list in reverse ordera are : " << endl;
-	list_elements(rbegin(proverbs), rend(proverbs));
+	array<int, 50> arr = {};
+	cout << arr[0] << endl;
+	arr[0] = fibonacci(1);
+	
+	for (int i = 0; i < 50; i++)
+	{
+		arr[i] = fibonacci(i);
+	}
 
-	proverbs.sort();
-	cout << "\nYour proverbs in ascending sequence are: " << endl;
-	list_elements(begin(proverbs), end(proverbs));
 
-	proverbs.sort(greater<>());
-	cout << "\nYour proverbs in descending sequence: " << endl;
-	list_elements(begin(proverbs), end(proverbs));
-
+	cout << arr[0] << endl;
 	return 0;
 }
