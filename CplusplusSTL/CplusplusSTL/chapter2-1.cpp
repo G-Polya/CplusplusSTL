@@ -1,6 +1,8 @@
 #include <iostream>
 #include <array>
 #include <functional>
+#include <iterator>
+#include <algorithm>
 using namespace std;
 
 template<typename Iter>
@@ -13,7 +15,7 @@ void list_elements(Iter begin, Iter end)
 		cout << *begin++;
 		if (++count % perline == 0)
 			cout << "\n";
-		cout << endl;
+		cout << " ";
 	}
 }
 
@@ -32,16 +34,18 @@ int main()
 			return fibonacci(no - 1) + fibonacci(no - 2);
 	};
 
-	array<int, 50> arr = {};
-	cout << arr[0] << endl;
-	arr[0] = fibonacci(1);
+	array<int, 30> arr = {};
 	
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < arr.size() ; i++)
 	{
+		
 		arr[i] = fibonacci(i);
 	}
+	list_elements(arr.begin(), arr.end());
+	
+
+	
 
 
-	cout << arr[0] << endl;
 	return 0;
 }
