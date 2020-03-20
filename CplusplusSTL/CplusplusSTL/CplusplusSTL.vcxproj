@@ -21,6 +21,10 @@
   <ItemGroup>
     <ClCompile Include="소스.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="header.h" />
+    <ClInclude Include="header2.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{1F1DCBFD-3F0C-4BCA-ACAE-6F67DEF72CB5}</ProjectGuid>

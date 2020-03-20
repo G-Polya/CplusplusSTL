@@ -1,107 +1,97 @@
 #include <iostream>
-#include <list>
-#include <stack>
-#include <iterator>
-#include <algorithm>
-#include <cmath>
+#include <iomanip>
+#include <vector>
 #include <string>
-#include <stdexcept>
+#include <numeric>
+#include <algorithm>
+#include <random>
+
+#include "header.h"
+#include "header2.h"
 
 using namespace std;
+using distribution = uniform_int_distribution<>;
 
-inline size_t precedence(const char op)
+void histogram(const vector<int>& v, int min)
 {
-	if (op == '+' || op == '-')
-		return 1;
-	if (op == '*' || op == '/')
-		return 2;
-	if (op == '^')
-		return 3;
+	string bar(60, '*');
 
-	throw runtime_error(string("invalid operator: ") + op);
-}
-
-double execute(stack<char>& ops, stack<double>& operands)
-{
-	double result = 0;
-	double rhs = operands.top();
-	operands.pop();
-	double lhs = operands.top();
-	operands.pop();
-
-	switch (ops.top())
+	for (size_t i = 0; i < v.size(); i++)
 	{
-	case '+':
-		result = lhs + rhs;
-		break;
-	case '-':
-		result = lhs - rhs;
-		break;
-	case '*':
-		result = lhs * rhs;
-		break;
-	case '/':
-		result = lhs / rhs;
-		break;
-	case '^':
-		result = pow(lhs, rhs);
-		break;
-	default:
-		throw runtime_error(string("invalid operator: ") + ops.top());
+		cout << setw(3) << i * min << " "
+			<< setw(4) << v[i] << " "
+			<< bar.substr(0, v[i])
+			<< (v[i] > static_cast<int>(bar.size()) ? "..." : "")
+			<< endl;
 	}
-
-	ops.pop();
-	operands.push(result);
-	return result;
 }
-
-
 
 int main()
 {
-	stack<double> operands;
-	stack<char> operators;
-	string exp;
-	cout << "An arithmetic expression can include the operator +, -, *, / and ^ for exponetiation. " << endl;
+	random_device random_n;
 
-	try
+	int service_t_min = 2, service_t_max = 15;
+	distribution service_t_d{ service_t_min, service_t_max };
+
+	int min_customers = 15, max_customers = 20;
+	distribution n_1st_customers_d{ min_customers, max_customers };
+
+	int min_arr__interval = 1, max_arr_interval = 5;
+	distribution arrival_interval_d{ min_arr__interval, max_arr_interval };
+
+	size_t n_checkouts = 0;
+	cout << "마트 계산대 개수 입력: ";
+	cin >> n_checkouts;
+	if (!n_checkouts)
 	{
-		while (true)
+		cout << "계산대 개수는 1이상이어야 합니다. 1로 설정합니다." << endl;
+		n_checkouts = 1;
+	}
+
+	vector<Checkout> checkouts{ n_checkouts };
+	vector<int> service_times(service_t_max - service_t_min + 1);
+
+	int count = n_1st_customers_d(random_n);
+	cout << "마트 개점 시에 대기 고객 수 : " << count << endl;
+	int added = 0;
+	int service_t = 0;
+	while (added++ < count)
+	{
+		service_t = service_t_d(random_n);
+		std::min_element(begin(checkouts), end(checkouts))->add(Customer(service_t));
+		++service_times[service_t - service_t_min];
+	}
+
+	size_t time = 0;
+	const size_t total_time = 600;
+	size_t longest_q = 0;
+
+	int new_cust_interval{ arrival_interval_d(random_n) };
+
+	while (time < total_time)
+	{
+		++time;
+		if (++new_cust_interval == 0)
 		{
-			cout << "Enter an arithmetic expression and press Enter - enter an empty line to end: " << endl;
-			getline(cin, exp, '\n');
-			if (exp.empty()) break;
+			service_t = service_t_d(random_n);
+			min_element(begin(checkouts), end(checkouts))->add(Customer(service_t));
+			++service_times[service_t - service_t_min];
 
-			exp.erase(remove(begin(exp), end(exp), ' '), end(exp));
+			for (auto& checkout : checkouts)
+				longest_q = max(longest_q, checkout.qlength());
 
-			size_t index = 0;
-
-			operands.push(stod(exp, &index));
-
-			while (true)
-			{
-				operators.push(exp[index++]);
-
-				size_t i = 0;
-				operands.push(stod(exp.substr(index), &i));
-				index += i;
-				if (index == exp.length())
-				{
-					while (!operators.empty())
-						execute(operators, operands);
-					break;
-				}
-
-				while (operators.empty() && precedence(exp[index]) != precedence(operators.top()))
-					execute(operators, operands);
-			}
-			cout << "result = " << operands.top() << endl;
+			new_cust_interval = arrival_interval_d(random_n);
 		}
-	}
-	catch (const exception& e)
-	{
-		cerr << e.what() << endl;
+
+		for (auto& checkout : checkouts)
+			checkout.time_increment();
 	}
 
-	cout << "Calculator ending..." << endl;
+	cout << "최대 대기열 길이 = " << longest_q << endl;
+	cout << "\n서비스 시간 막대 그래프\n";
+	histogram(service_times, service_t_min);
+
+	cout << "\n오늘 총 고객 수 :"
+		<< accumulate(begin(service_times), end(service_times), 0)
+		<< endl;
 }
