@@ -1,17 +1,21 @@
 #include <iostream>
-#include <queue>
+#include <iomanip>
+#include <algorithm>
 #include <string>
+#include <deque>
 
 using namespace std;
 
-template<typename T>
-void list_pq(priority_queue<T> pq, size_t count = 5)
+void show(const deque<string>& words, size_t count = 5)
 {
+	if (words.empty())
+		return;
+	auto max_len = max_element(begin(words), end(words), [](const string& s1, const string& s2) {return s1.size() < s2.size(); })->size();
+
 	size_t n = count;
-	while (!pq.empty())
+	for (const auto& word : words)
 	{
-		cout << pq.top() << " ";
-		pq.pop();
+		cout << setw(max_len + 1) << word << " ";
 		if (--n)
 			continue;
 		cout << endl;
@@ -22,18 +26,35 @@ void list_pq(priority_queue<T> pq, size_t count = 5)
 
 int main()
 {
-	priority_queue<string> words;
+	deque<string> words;
 	string word;
-	cout << "Enter words separated by spaces, enter Ctrl+Z on a separate line to end:\n";
+	cout << "Enter words separated by spaces, enter Ctrl+Z on a separated line to end:\n";
 	while (true)
 	{
-		if ((cin>>word).eof())
+		if ((cin >> word).eof())
+		{
+			cin.clear();
 			break;
-		words.push(word);
-
+		}
+		words.push_back(word);
 	}
-	cout << "You entered " << words.size() << " words" << endl;
-	list_pq(words);
+	cout << "The words in the list are " << endl;
+	show(words);
 
-	return 0;
+	make_heap(begin(words), end(words));
+	cout << "\nAfter making a heap, the words in the list are:" << endl;
+	show(words);
+	cout << "\nYou entered " << words.size() << " words. Enter some more:" << endl;
+	while (true)
+	{
+		if ((cin >> word).eof())
+		{
+			cin.clear();
+			break;
+		}
+		words.push_back(word);
+		push_heap(begin(words), end(words));
+	}
+	cout << "\nThe words in the list are now:" << endl;
+	show(words);
 }
