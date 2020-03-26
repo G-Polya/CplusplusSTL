@@ -1,40 +1,15 @@
 #pragma once
-#include <queue>
 #include "header.h"
 
-using namespace std;
-
-class Checkout
+class Carton : public Box
 {
-private:
-	queue<Customer> customers;
-
 public:
-	void add(const Customer& customer)
-	{
-		customers.push(customer);
-	}
+	explicit Carton(size_t l =1, size_t w=1, size_t h =1)
+		: Box(l,w,h)
+	{}
 
-	size_t qlength() const
+	double volume() const override
 	{
-		return customers.size();
-	}
-
-	void time_increment()
-	{
-		if (!customers.empty())
-		{
-			if (customers.front().time_decrement().done())
-				customers.pop();
-		}
-	}
-
-	bool operator<(const Checkout& other) const
-	{
-		return qlength() < other.qlength();
-	}
-	bool operator>(const Checkout& other) const
-	{
-		return qlength() > other.qlength();
+		return 0.85 * Box::volume();
 	}
 };

@@ -1,22 +1,40 @@
 #pragma once
-class Customer
+#include <iostream>
+#include <istream>
+#include <utility>
+
+using namespace std::rel_ops;
+
+class Box
 {
-private:
-	size_t service_t = 0;
+protected:
+	size_t length = 0;
+	size_t width = 0;
+	size_t height = 0;
+
 public:
-	explicit Customer(size_t st = 10)
-		: service_t(st)
+	explicit Box(size_t l = 1, size_t w = 1, size_t h = 1)
+		: length(l), width(w), height(h)
 	{}
+	virtual ~Box() = default;
 
-	Customer& time_decrement()
+
+	virtual inline double volume() const
 	{
-		if (service_t > 0)
-			--service_t;
-		return *this;
+		return length * width * height;
 	}
 
-	bool done() const
+	bool operator<(const Box& box) const
 	{
-		return service_t == 0;
+		return volume() < box.volume();
 	}
+	
+	bool operator==(const Box& box) const
+	{
+		return length == box.length && width == box.width && height == box.height;
+	}
+
+	virtual std::istream& read(std::istream& in);
+	virtual std::ostream& write(std::ostream& out) const;
+
 };
