@@ -19,12 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Box.cpp" />
-    <ClCompile Include="소스.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="header.h" />
-    <ClInclude Include="header2.h" />
+    <ClCompile Include="소스 파일\3-2.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
