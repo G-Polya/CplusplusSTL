@@ -1,59 +1,112 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <map>
-#include <utility>
 #include <cctype>
-#include "Name.h"
+#include <map>
+#include <vector>
+#include <tuple>
+#include <algorithm>
 
 using namespace std;
-using Entry = pair<const Name, size_t>;
+using Name = pair<string, string>;
+using DOB = tuple<size_t, size_t, size_t>;
+using Details = tuple<DOB, size_t, string>;
+using Element_type = map<Name, Details>::value_type;
+using People = map<Name, Details>;
 
-Entry get_entry()
+
+void get_people(People& people)
 {
-	cout << "Enter first and second names followed by the age: ";
-	Name name {};
-	size_t age {};
-	cin >> name >> age;
-	return make_pair(name, age);
+	string first{}, second{};
+	size_t month{}, day{}, year{};
+	size_t height{};
+	string occupation{};
+	char answer = 'Y';
+
+	while (toupper(answer) == 'Y')
+	{
+		cout << "Enter a first name and a second name: ";
+		cin >> ws >> first >> second;
+
+		cout << "Enter date of birth as month day year (integers): ";
+		cin >> month >> day >> year;
+		DOB dob{ month, day,year };
+
+		cout << "Enter height in inches: ";
+		cin >> height;
+
+		cout << "Enhter occupation: ";
+		getline(cin >> ws, occupation, '\n');
+
+		people.emplace(make_pair(Name{ first,second }, make_tuple(dob, height, occupation)));
+
+		cout << "Do you want to enter another(Y or N): ";
+		cin >> answer;
+
+	}
 }
 
-void list_entries(const map<Name, size_t>& people)
+
+void list_DOB_Job(const People& people)
 {
-	for (auto& entry : people)
+	DOB dob;
+	string occupation{};
+	cout << '\n';
+	for (auto iter = begin(people); iter != end(people); iter++)
 	{
-		cout << left << setw(30) << entry.first
-			<< right << setw(4) << entry.second << endl; 
+		tie(dob, ignore, occupation) = iter->second;
+		cout << setw(20) << left << (iter->first.first + " " + iter->first.second)
+			<< "DOB: " << right << setw(2) << get<0>(dob) << "-"
+			<< setw(2) << setfill('0') << get<1>(dob) << "-"
+			<< setw(4) << get<2>(dob) << setfill(' ')
+			<< "Occupation: " << occupation << endl;
+	}
+}
+
+template<typename Compare>
+void list_sorted_people(const People& people, Compare comp)
+{
+	vector<const Element_type*> folks;
+	for (const auto& pr : people)
+		folks.push_back(&pr);
+
+	auto ptr_comp = 
+		[&comp](const Element_type* pr1, const Element_type* pr2)->bool 
+		{return comp(*pr1, *pr2); };
+
+	sort(begin(folks), end(folks), ptr_comp);
+
+	DOB dob{};
+	size_t height{};
+	string occupation{};
+	cout << '\n';
+
+	for (const auto& p : folks)
+	{
+		tie(dob, height, occupation) = p->second;
+		cout << setw(20) << left << (p->first.first + " " + p->first.second)
+			<< "DOB: " << right << setw(2) << get<0>(dob) << "-"
+			<< setw(2) << setfill('0') << get<1>(dob) << "-"
+			<< setw(4) << get<2>(dob) << setfill(' ')
+			<< "Occupation: " << occupation << endl;
 	}
 }
 
 int main()
 {
-	map<Name, size_t> people = { {{"Ann", "Dante"}, 25}, {{"Bill", "Hook"}, 48}, {{"Jim", "James"}, 32}, {{"Mark", "Time"}, 32} };
+	map<Name, Details> people;
+	get_people(people);
 
-	cout << "\nThe initial contents of the map is:\n";
-	list_entries(people);
+	cout << "\nThe DOB & jobs are: \n";
+	list_DOB_Job(people);
 
-	char answer = 'Y';
-	cout << "\nEnter a Name and age entry.\n";
-	while (toupper(answer) == 'Y')
+	auto comp = [](const Element_type& pr1, const Element_type& pr2)
 	{
-		Entry entry = get_entry();
-		auto pr = people.insert(entry);
-		if (!pr.second)
-		{
-			cout << "Key \"" << pr.first->first << "\" already present. Do you want to update the age(Y or N)? ";
-			cin >> answer;
-			if (toupper(answer) == 'Y')
-				pr.first->second = entry.second;
-		}
+		return get<1>(pr1.second) < get<1>(pr2.second);
+	};
 
-		cout << "Do you want to enter anoter entry(Y or N)?";
-		cin >> answer;
-	}
-
-	cout << "\nThe map now contains the following entries:\n";
-	list_entries(people);
+	cout << "\nThe people in height order are : \n";
+	list_sorted_people(people, comp);
 
 	return 0;
 }
