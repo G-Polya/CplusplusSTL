@@ -1,112 +1,44 @@
 #include <iostream>
-#include <iomanip>
 #include <string>
-#include <cctype>
 #include <map>
-#include <vector>
-#include <tuple>
-#include <algorithm>
+#include <cctype>
 
 using namespace std;
-using Name = pair<string, string>;
-using DOB = tuple<size_t, size_t, size_t>;
-using Details = tuple<DOB, size_t, string>;
-using Element_type = map<Name, Details>::value_type;
-using People = map<Name, Details>;
-
-
-void get_people(People& people)
-{
-	string first{}, second{};
-	size_t month{}, day{}, year{};
-	size_t height{};
-	string occupation{};
-	char answer = 'Y';
-
-	while (toupper(answer) == 'Y')
-	{
-		cout << "Enter a first name and a second name: ";
-		cin >> ws >> first >> second;
-
-		cout << "Enter date of birth as month day year (integers): ";
-		cin >> month >> day >> year;
-		DOB dob{ month, day,year };
-
-		cout << "Enter height in inches: ";
-		cin >> height;
-
-		cout << "Enhter occupation: ";
-		getline(cin >> ws, occupation, '\n');
-
-		people.emplace(make_pair(Name{ first,second }, make_tuple(dob, height, occupation)));
-
-		cout << "Do you want to enter another(Y or N): ";
-		cin >> answer;
-
-	}
-}
-
-
-void list_DOB_Job(const People& people)
-{
-	DOB dob;
-	string occupation{};
-	cout << '\n';
-	for (auto iter = begin(people); iter != end(people); iter++)
-	{
-		tie(dob, ignore, occupation) = iter->second;
-		cout << setw(20) << left << (iter->first.first + " " + iter->first.second)
-			<< "DOB: " << right << setw(2) << get<0>(dob) << "-"
-			<< setw(2) << setfill('0') << get<1>(dob) << "-"
-			<< setw(4) << get<2>(dob) << setfill(' ')
-			<< "Occupation: " << occupation << endl;
-	}
-}
-
-template<typename Compare>
-void list_sorted_people(const People& people, Compare comp)
-{
-	vector<const Element_type*> folks;
-	for (const auto& pr : people)
-		folks.push_back(&pr);
-
-	auto ptr_comp = 
-		[&comp](const Element_type* pr1, const Element_type* pr2)->bool 
-		{return comp(*pr1, *pr2); };
-
-	sort(begin(folks), end(folks), ptr_comp);
-
-	DOB dob{};
-	size_t height{};
-	string occupation{};
-	cout << '\n';
-
-	for (const auto& p : folks)
-	{
-		tie(dob, height, occupation) = p->second;
-		cout << setw(20) << left << (p->first.first + " " + p->first.second)
-			<< "DOB: " << right << setw(2) << get<0>(dob) << "-"
-			<< setw(2) << setfill('0') << get<1>(dob) << "-"
-			<< setw(4) << get<2>(dob) << setfill(' ')
-			<< "Occupation: " << occupation << endl;
-	}
-}
+using Pet_type = string;
+using Pet_name = string;
 
 int main()
 {
-	map<Name, Details> people;
-	get_people(people);
+	multimap<Pet_type, Pet_name> pets;
+	Pet_type type="";
+	Pet_name name="";
+	char more = 'Y';
 
-	cout << "\nThe DOB & jobs are: \n";
-	list_DOB_Job(people);
-
-	auto comp = [](const Element_type& pr1, const Element_type& pr2)
+	while (toupper(more) == 'Y')
 	{
-		return get<1>(pr1.second) < get<1>(pr2.second);
-	};
+		cout << "Enter the type of your pet and its name : ";
+		cin >> std::ws >> type >> name;
 
-	cout << "\nThe people in height order are : \n";
-	list_sorted_people(people, comp);
+		auto iter = pets.lower_bound(type);
+		if (iter != end(pets))
+			pets.emplace_hint(iter, type, name);
+		else
+			pets.emplace(type, name);
 
-	return 0;
+		cout << "Do you want to enter another(Y or N)? ";
+		cin >> more;
+	}
+
+	cout << "\nPet list by type:\n";
+	auto iter = begin(pets);
+	while (iter != end(pets))
+	{
+		auto pr = pets.equal_range(iter->first);
+		cout << "\nPets of type " << iter->first << " are:\n";
+		for (auto p = pr.first; p != pr.second; p++)
+			cout << " " << p->second;
+		cout << endl;
+		iter = pr.second;
+	}
+
 }
